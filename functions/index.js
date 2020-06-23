@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+const functions = require("firebase-functions");
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -6,3 +6,10 @@ const functions = require('firebase-functions');
 // exports.helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
 // });
+
+// http request
+exports.redirectWebsite = functions.https.onRequest((req, res) => {
+  res.redirect("https://www.google.com");
+});
+
+//http callable function
