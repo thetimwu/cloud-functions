@@ -50,3 +50,30 @@ exports.addRequest = functions.https.onCall(async (data, context) => {
     upvotes: 0,
   });
 });
+
+//http callable function (upvote)
+exports.upvote = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "only authenticated users can add requests"
+    );
+  }
+
+  const user = admin.firestore().collection("user").doc(context.auth.uid);
+  const request = admin.firestore().collection("requests").doc(data.id);
+
+  const doc = await user.get();
+  if (doc.data().upvotedOn.includes(data.id)) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "You can only upvote something once"
+    );
+  }
+
+  await user.update({
+    upvotedOn: [...doc.data().upvotedOn, data.id],
+  });
+
+  return request.update({ upvotes: admin.firestore.FieldValue.increment(1) });
+});
